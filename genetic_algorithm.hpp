@@ -30,15 +30,15 @@ class genetic_algorithm {
     double IMPROVEMENT_FACTOR = 1.0;
     double SCALAR = 10000.0;
 
-    void shuffle_cities(tour &t);
-    double get_distance_between_cities(city first, city second);
-    int determine_fitness(vector<tour> &p, int size);
-    double get_tour_distance(tour &t);
-    vector<tour> select_parents(vector<tour> &p);
+    void shuffle_cities(tour &tour);
+    double get_distance_between_cities(city c1, city c2);
+    int determine_fitness(vector<tour> &population, int size);
+    double get_tour_distance(tour &tour);
+    vector<tour> select_parents(vector<tour> &population);
     tour crossover(vector<tour> &parents);
     bool contains_city(tour &candidate_tour, int length, city &candidate_city);
-    void mutate(vector<tour> &p);
-    void swap_cities(int first, int second, vector<city> &cities);
+    void mutate(vector<tour> &population);
+    void swap_cities(int c1, int c2, vector<city> &cities);
     void print_cities(vector<city> &cities);
 
 public:
