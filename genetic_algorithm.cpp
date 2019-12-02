@@ -6,67 +6,96 @@
 #include "genetic_algorithm.hpp"
 
 genetic_algorithm::genetic_algorithm() {
-    tour master_list;
+    tour default_tour;
     vector<tour> population{POPULATION_SIZE};
     vector<tour> cross{POPULATION_SIZE - NUMBER_OF_ELITES};
     double best_distance = 0.0;
     double base_distance = 0.0;
 
+    /**
+     * Set seed of RNG.
+     */
+
     srand(time(NULL));
 
-    for (int i = 0; i < CITIES_IN_TOUR; ++i) {
+
+    /**
+     * Initialize cities.
+     */
+    for (auto i = 0; i < CITIES_IN_TOUR; ++i) {
         city c{"City#" + to_string(i),
                rand() % (MAP_BOUNDARY + 1),
                rand() % (MAP_BOUNDARY + 1)
         };
-        master_list.cities[i] = c;
+        default_tour.cities[i] = c;
     }
 
+    /**
+     * Generate tours.
+     */
     for (auto i = 0; i < POPULATION_SIZE; ++i) {
         for (auto j = 0; j < CITIES_IN_TOUR; ++j)
-            population[i].cities[j] = master_list.cities[j];
+            population[i].cities[j] = default_tour.cities[j];
         shuffle_cities(population[i]);
         population[i].fitness = 0.0;
     }
 
-    int best_tour_index = determine_fitness(population, static_cast<int>(POPULATION_SIZE));
-    base_distance = SCALAR / population[best_tour_index].fitness;
+    /**
+     * Selection
+     */
+
+    int fittest_index = determine_fitness(population, POPULATION_SIZE);
+    base_distance = SCALAR / population[fittest_index].fitness;
 
     cout << "Initial shortest distance: " << base_distance << endl;
     cout << endl;
 
     int iterations = 0;
     while (iterations++ < ITERATIONS && base_distance / best_distance > IMPROVEMENT_FACTOR) {
-        if (best_tour_index != 0) {
+        if (fittest_index != 0) {
             const tour temp_tour = population[0];
-            population[0] = population[best_tour_index];
-            population[best_tour_index] = temp_tour;
+            population[0] = population[fittest_index];
+            population[fittest_index] = temp_tour;
         }
 
-        for (int i = 0; i < (POPULATION_SIZE - NUMBER_OF_ELITES); ++i) {
+        /**
+         * Crossover
+         */
+
+        for (auto i = 0; i < (POPULATION_SIZE - NUMBER_OF_ELITES); ++i) {
             vector<tour> parents = select_parents(population);
             cross[i] = crossover(parents);
         }
 
-        for (int i = NUMBER_OF_ELITES; i < POPULATION_SIZE; ++i) {
+        for (auto i = NUMBER_OF_ELITES; i < POPULATION_SIZE; ++i) {
             population[i] = cross[i - NUMBER_OF_ELITES];
             population[i].fitness = 0.0;
         }
 
+        /**
+         * Mutation
+         */
         mutate(population);
 
-        best_tour_index = determine_fitness(population, static_cast<int>(POPULATION_SIZE));
-        best_distance = get_tour_distance(population[best_tour_index]);
+        /**
+         * Evaluation
+         */
+        fittest_index = determine_fitness(population, static_cast<int>(POPULATION_SIZE));
+        best_distance = get_tour_distance(population[fittest_index]);
+
+        /**
+         * Report
+         */
 
         if (best_distance < base_distance) {
             base_distance = best_distance;
-            print_cities(population[best_tour_index].cities);
+            print_cities(population[fittest_index].cities);
             cout << "|| Distance: " << best_distance;
             cout << endl;
         }
     }
     cout << endl;
-    cout << "Shortest distance: " << SCALAR / population[best_tour_index].fitness;
+    cout << "Shortest distance: " << SCALAR / population[fittest_index].fitness;
 }
 
 void genetic_algorithm::mutate(vector<tour> &p) {

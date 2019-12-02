@@ -17,16 +17,18 @@
 using namespace std;
 
 class genetic_algorithm {
-    int CITIES_IN_TOUR = 20;
-    int POPULATION_SIZE = 30;
-    int MAP_BOUNDARY = 1000;
+    int CITIES_IN_TOUR = 32;
+    unsigned long POPULATION_SIZE = 32;
+    int SHUFFLES = 64;
+    // Instructions unclear ^ "The number of times a swap must be effected for a shuffle"
     int ITERATIONS = 1000;
+    int MAP_BOUNDARY = 1000;
     unsigned long PARENT_POOL_SIZE = 5;
     double MUTATION_RATE = 0.15;
     unsigned long NUMBER_OF_PARENTS = 2;
     int NUMBER_OF_ELITES = 1;
+    double IMPROVEMENT_FACTOR = 1.0;
     double SCALAR = 10000.0;
-    double IMPROVEMENT_FACTOR = 0.1;
 
     void shuffle_cities(tour &t);
     double get_distance_between_cities(city first, city second);

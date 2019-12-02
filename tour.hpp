@@ -12,7 +12,7 @@ using namespace std;
 
 class tour {
 public:
-    const int CITIES_IN_TOUR = 20;
+    const int CITIES_IN_TOUR = 32;
 
     vector<city> cities;
     double fitness;
